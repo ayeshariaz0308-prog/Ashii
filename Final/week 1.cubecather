@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube Catcher Minigame</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 4px solid #333;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        .ui { margin-bottom: 10px; font-size: 24px; }
+    </style>
+</head>
+<body>
+
+    <div class="ui">Score: <span id="score">0</span></div>
+    <canvas id="gameCanvas" width="600" height="400"></canvas>
+    <p>Use <b>Left/Right Arrows</b> or <b>A/D</b> keys to move</p>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const scoreElement = document.getElementById("score");
+
+        // Game Variables
+        let score = 0;
+        let gameActive = true;
+        let speed = 4;
+
+        // Player Object
+        const player = {
+            x: canvas.width / 2 - 25,
+            y: canvas.height - 60,
+            width: 50,
+            height: 50,
+            color: "#3498db",
+            dx: 0
+        };
+
+        // Cube Object
+        const cube = {
+            x: Math.random() * (canvas.width - 30),
+            y: 0,
+            size: 30,
+            color: "#e74c3c"
+        };
+
+        // Controls
+        document.addEventListener("keydown", (e) => {
+            if (e.key === "ArrowLeft" || e.key === "a") player.dx = -8;
+            if (e.key === "ArrowRight" || e.key === "d") player.dx = 8;
+        });
+
+        document.addEventListener("keyup", (e) => {
+            if (["ArrowLeft", "ArrowRight", "a", "d"].includes(e.key)) player.dx = 0;
+        });
+
+        function update() {
+            if (!gameActive) return;
+
+            // Move Player
+            player.x += player.dx;
+
+            // Boundary Checks
+            if (player.x < 0) player.x = 0;
+            if (player.x + player.width > canvas.width) player.x = canvas.width - player.width;
+
+            // Move Cube
+            cube.y += speed;
+
+            // Collision Detection
+            if (
+                cube.y + cube.size > player.y &&
+                cube.x < player.x + player.width &&
+                cube.x + cube.size > player.x
+            ) {
+                // Catch Success
+                score++;
+                scoreElement.innerText = score;
+                speed += 0.2; // Increase difficulty
+                resetCube();
+            }
+
+            // Miss (Game Over)
+            if (cube.y > canvas.height) {
+                gameActive = false;
+                alert("Game Over! Your Score: " + score);
+                location.reload(); // Restart game
+            }
+        }
+
+        function resetCube() {
+            cube.y = -30;
+            cube.x = Math.random() * (canvas.width - cube.size);
+        }
+
+        function draw() {
+            // Clear Canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Player
+            ctx.fillStyle = player.color;
+            ctx.fillRect(player.x, player.y, player.width, player.height);
+
+            // Draw Cube
+            ctx.fillStyle = cube.color;
+            ctx.fillRect(cube.x, cube.y, cube.size, cube.size);
+
+            requestAnimationFrame(() => {
+                update();
+                draw();
+            });
+        }
+
+        draw();
+    </script>
+</body>
+</html>
