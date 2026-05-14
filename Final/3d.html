@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Peach Nude Cube</title>
+    <style>
+        body { margin: 0; background-color: #fdf5e6; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+
+        // 1. Scene setup
+        const scene = new THREE.Scene();
+        // Light nude background (Linen/Eggshell style)
+        scene.background = new THREE.Color(0xfaf9f6); 
+
+        // 2. Camera setup
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(1.5, 1.5, 2); 
+        camera.lookAt(0, 0, 0); 
+
+        // 3. Renderer setup
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
+
+        // 4. Create the Cube 
+        const geometry = new THREE.BoxGeometry(1, 1, 1);
+        const material = new THREE.MeshStandardMaterial({ 
+            color: 0xffdab9, // PeachPuff hex code (Peach Nude)
+            roughness: 0.4 
+        });
+        const cube = new THREE.Mesh(geometry, material);
+        scene.add(cube);
+
+        // 5. Lights
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+        directionalLight.position.set(2, 4, 3);
+        scene.add(directionalLight);
+
+        // 6. Render function
+        function render() {
+            renderer.render(scene, camera);
+        }
+
+        // Handle resizing
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            render();
+        });
+
+        render();
+    </script>
+</body>
+</html>
